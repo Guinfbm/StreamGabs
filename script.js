@@ -367,8 +367,7 @@ function openUrlOrProtocol(value) {
         // Sempre abre em nova janela/aba
         const w = window.open(url, "_blank", "noopener,noreferrer");
         if (!w) {
-            // Fallback se o popup foi bloqueado
-            window.location.href = url;
+            console.warn("Pop-up foi bloqueado. URL não foi aberta:", url);
         }
     } catch (error) {
         console.error("Erro ao abrir URL:", error);
