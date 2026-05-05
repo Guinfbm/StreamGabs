@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="description" content="Soundboard app para reproduzir sons durante live streams">
+    <meta name="theme-color" content="#0b0b0d">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="StraemGab">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="msapplication-TileColor" content="#0b0b0d">
+    <meta name="msapplication-config" content="none">
+    
+    <link rel="stylesheet" href="./style.css">
+    <link rel="manifest" href="./manifest.webmanifest">
+    <link rel="icon" href="./icons/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="./icons/icon.svg">
+    <link rel="shortcut icon" href="./icons/icon.svg" type="image/svg+xml">
+    
+    <title>StraemGab</title>
+</head>
+<body>
+
+    <header class="topbar">
+        <button id="btn-ajustes" type="button" class="settings-btn">Ajustes</button>
+    </header>
+
+    <h1>StraemGab</h1>
+
+    <main>
+        <div class="button"><button type="button" class="sound-btn btn-1" aria-label="Som 1"></button></div>
+        <div class="button"><button type="button" class="sound-btn btn-2" aria-label="Som 2"></button></div>
+        <div class="button"><button type="button" class="sound-btn btn-3" aria-label="Som 3"></button></div>
+        <div class="button"><button type="button" class="sound-btn btn-4" aria-label="Som 4"></button></div>
+        <div class="button"><button type="button" class="sound-btn btn-5" aria-label="Som 5"></button></div>
+        <div class="button"><button type="button" class="sound-btn btn-6" aria-label="Som 6"></button></div>
+        <div class="button"><button type="button" class="sound-btn btn-7" aria-label="Som 7"></button></div>
+        <div class="button"><button type="button" class="sound-btn btn-8" aria-label="Som 8"></button></div>
+        <div class="button"><button type="button" class="sound-btn btn-9" aria-label="Som 9"></button></div>
+        <div class="button"><button type="button" class="sound-btn btn-10" aria-label="Som 10"></button></div>
+        <div class="button"><button type="button" class="sound-btn btn-11" aria-label="Som 11"></button></div>
+        <div class="button"><button type="button" class="sound-btn btn-12" aria-label="Som 12"></button></div>
+    </main>
+
+    <div class="overlay" id="overlay" hidden></div>
+
+    <div class="ajustes" id="ajustes" hidden>
+        <div class="ajuste">
+            <div class="tabs" role="tablist" aria-label="Ajustes">
+                <button id="tab-btn-geral" class="tab is-active" type="button" role="tab" aria-selected="true">Geral</button>
+                <button id="tab-btn-mic" class="tab" type="button" role="tab" aria-selected="false">Microfone</button>
+                <button id="tab-btn-atalhos" class="tab" type="button" role="tab" aria-selected="false">Atalhos</button>
+            </div>
+
+            <section id="tab-geral" class="tab-panel is-active" role="tabpanel">
+
+                <!-- Volume global -->
+                <div class="volume">
+                    <label>Volume</label>
+                    <input id="volume-range" type="range" min="0" max="100" value="80">
+                </div>
+
+                <!-- Cor do botão -->
+                <div class="field-group">
+                    <label class="field-label">Cor do botão selecionado</label>
+                    <input id="color-picker" type="color" class="color-picker" value="#22c55e">
+                </div>
+
+                <!-- Imagem do botão -->
+                <div class="field-group">
+                    <label class="field-label">Imagem do botão</label>
+                    <label class="file-label" for="image-input">Escolher imagem…</label>
+                    <input id="image-input" type="file" accept="image/*">
+                </div>
+
+                <!-- Áudio personalizado -->
+                <div class="field-group">
+                    <label class="field-label">Áudio personalizado</label>
+                    <p class="field-hint">Substitui o áudio padrão do botão selecionado.</p>
+                    <div class="file-row">
+                        <label class="file-label" for="audio-input">Escolher áudio…</label>
+                        <button id="audio-clear" type="button" class="btn-ghost">Remover</button>
+                    </div>
+                    <input id="audio-input" type="file" accept="audio/*">
+                    <p id="audio-filename" class="field-hint audio-filename"></p>
+                </div>
+
+                <!-- Ação do botão -->
+                <div class="field-group">
+                    <label class="field-label">Ação ao pressionar</label>
+                    <select id="action-type">
+                        <option value="sound">Tocar som</option>
+                        <option value="open">Abrir link / app</option>
+                    </select>
+
+                    <div id="action-open-fields" hidden>
+                        <p class="field-hint">Cole uma URL (<code>https://…</code>) ou protocolo de app (<code>discord://</code>, <code>obs://</code>…).</p>
+                        <input id="action-open-url" type="url" placeholder="https://exemplo.com ou discord://">
+                    </div>
+                </div>
+
+            </section>
+
+            <section id="tab-mic" class="tab-panel" role="tabpanel" hidden>
+                <div class="mic">
+                    <label class="check">
+                        <input id="mic-toggle" type="checkbox">
+                        Usar microfone
+                    </label>
+                    <small class="hint">Escolha qual microfone este app usa quando a opção "Usar microfone" estiver ligada.</small>
+                    <div class="mic-row">
+                        <select id="mic-select" disabled>
+                            <option value="">Microfone padrão</option>
+                        </select>
+                        <button id="mic-refresh" type="button">Atualizar</button>
+                    </div>
+                </div>
+            </section>
+
+            <section id="tab-atalhos" class="tab-panel" role="tabpanel">
+                <div class="shortcuts">
+                    <h2>Atalhos de Teclado</h2>
+                    <p>Configure os atalhos para os botões de som:</p>
+                    <div class="shortcut-row"><label for="shortcut-1">Botão 1:</label><input id="shortcut-1" type="text" maxlength="1" value="1"></div>
+                    <div class="shortcut-row"><label for="shortcut-2">Botão 2:</label><input id="shortcut-2" type="text" maxlength="1" value="2"></div>
+                    <div class="shortcut-row"><label for="shortcut-3">Botão 3:</label><input id="shortcut-3" type="text" maxlength="1" value="3"></div>
+                    <div class="shortcut-row"><label for="shortcut-4">Botão 4:</label><input id="shortcut-4" type="text" maxlength="1" value="4"></div>
+                    <div class="shortcut-row"><label for="shortcut-5">Botão 5:</label><input id="shortcut-5" type="text" maxlength="1" value="5"></div>
+                    <div class="shortcut-row"><label for="shortcut-6">Botão 6:</label><input id="shortcut-6" type="text" maxlength="1" value="6"></div>
+                    <div class="shortcut-row"><label for="shortcut-7">Botão 7:</label><input id="shortcut-7" type="text" maxlength="1" value="7"></div>
+                    <div class="shortcut-row"><label for="shortcut-8">Botão 8:</label><input id="shortcut-8" type="text" maxlength="1" value="8"></div>
+                    <div class="shortcut-row"><label for="shortcut-9">Botão 9:</label><input id="shortcut-9" type="text" maxlength="1" value="9"></div>
+                    <div class="shortcut-row"><label for="shortcut-10">Botão 10:</label><input id="shortcut-10" type="text" maxlength="1" value="0"></div>
+                    <div class="shortcut-row"><label for="shortcut-11">Botão 11:</label><input id="shortcut-11" type="text" maxlength="1" value="-"></div>
+                    <div class="shortcut-row"><label for="shortcut-12">Botão 12:</label><input id="shortcut-12" type="text" maxlength="1" value="+"></div>
+                </div>
+            </section>
+
+            <button id="btn-fechar-ajustes" type="button">Fechar</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        // Registrar Service Worker e habilitar funcionalidades de app
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('./service-worker.js', { scope: './' })
+                .then(registration => {
+                    console.log('✓ Service Worker registrado com sucesso', registration);
+                    
+                    // Verificar atualizações periodicamente
+                    setInterval(() => {
+                        registration.update();
+                    }, 60000); // A cada minuto
+                })
+                .catch(error => {
+                    console.error('✗ Erro ao registrar Service Worker:', error);
+                });
+        }
+        
+        // Detectar quando o app pode ser instalado
+        let deferredPrompt;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            console.log('✓ App pronto para instalar');
+        });
+        
+        // Detectar quando o app é instalado
+        window.addEventListener('appinstalled', () => {
+            console.log('✓ App instalado com sucesso!');
+            deferredPrompt = null;
+        });
+        
+        // Detectar modo offline/online
+        window.addEventListener('offline', () => {
+            console.log('⚠ App em modo offline');
+        });
+        
+        window.addEventListener('online', () => {
+            console.log('✓ Conexão restaurada');
+        });
+        
+        // Prevenir zoom no iOS
+        document.addEventListener('touchmove', (e) => {
+            if (e.scale !== 1) {
+                e.preventDefault();
+            }
+        }, false);
+    </script>
+</body>
+</html>

@@ -1,0 +1,56 @@
+{
+  "name": "StraemGab Soundboard",
+  "short_name": "StraemGab",
+  "description": "Soundboard app para reproduzir sons durante live streams",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#0b0b0d",
+  "theme_color": "#0b0b0d",
+  "screenshots": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "form_factor": "narrow"
+    },
+    {
+      "src": "icons/icon.svg",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "form_factor": "wide"
+    }
+  ],
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "maskable"
+    }
+  ],
+  "categories": ["music", "productivity"],
+  "screenshots": [],
+  "shortcuts": [
+    {
+      "name": "Abrir Soundboard",
+      "short_name": "Soundboard",
+      "description": "Abre a aplicação de soundboard",
+      "url": "./",
+      "icons": [
+        {
+          "src": "icons/icon.svg",
+          "sizes": "192x192",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ]
+}
