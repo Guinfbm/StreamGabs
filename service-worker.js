@@ -1,9 +1,9 @@
 /* PWA service worker for StraemGab - Soundboard App */
 
-const APP_VERSION = "1.0.0";
-const CORE_CACHE = "straemgab-core-v6";
-const RUNTIME_CACHE = "straemgab-runtime-v6";
-const STATIC_CACHE = "straemgab-static-v6";
+const APP_VERSION = "2.0.0";
+const CORE_CACHE = "straemgab-core-v7";
+const RUNTIME_CACHE = "straemgab-runtime-v7";
+const STATIC_CACHE = "straemgab-static-v7";
 
 const CORE_ASSETS = [
   "./",
@@ -28,30 +28,41 @@ const CORE_ASSETS = [
 ];
 
 self.addEventListener("install", (event) => {
+  console.log("Service Worker instalando...");
   event.waitUntil(
     (async () => {
-      const cache = await caches.open(CORE_CACHE);
-      await cache.addAll(CORE_ASSETS);
-      await self.skipWaiting();
+      try {
+        const cache = await caches.open(CORE_CACHE);
+        await cache.addAll(CORE_ASSETS);
+        await self.skipWaiting();
+        console.log("✓ Service Worker instalado com sucesso");
+      } catch (error) {
+        console.error("✗ Erro ao instalar Service Worker:", error);
+      }
     })()
   );
 });
 
 self.addEventListener("activate", (event) => {
+  console.log("Service Worker ativando...");
   event.waitUntil(
     (async () => {
-      const keys = await caches.keys();
-      const validCaches = [CORE_CACHE, RUNTIME_CACHE, STATIC_CACHE];
-      await Promise.all(
-        keys
-          .filter((key) => !validCaches.includes(key))
-          .map((key) => {
-            console.log(`Deletando cache antigo: ${key}`);
-            return caches.delete(key);
-          })
-      );
-      await self.clients.claim();
-      console.log("Service Worker ativado com sucesso");
+      try {
+        const keys = await caches.keys();
+        const validCaches = [CORE_CACHE, RUNTIME_CACHE, STATIC_CACHE];
+        await Promise.all(
+          keys
+            .filter((key) => !validCaches.includes(key))
+            .map((key) => {
+              console.log(`Deletando cache antigo: ${key}`);
+              return caches.delete(key);
+            })
+        );
+        await self.clients.claim();
+        console.log("✓ Service Worker ativado com sucesso");
+      } catch (error) {
+        console.error("✗ Erro ao ativar Service Worker:", error);
+      }
     })()
   );
 });
@@ -70,13 +81,14 @@ self.addEventListener("fetch", (event) => {
 
   if (request.method !== "GET") return;
 
-  // SPA-ish fallback: always serve index.html for navigations when offline
+  // SPA-ish fallback: sempre servir index.html para navegações quando offline
   if (isNavigationRequest(request)) {
     event.respondWith(
       (async () => {
         try {
           return await fetch(request);
-        } catch {
+        } catch (error) {
+          console.warn("Navegação falhou, servindo cache:", request.url);
           const cache = await caches.open(CORE_CACHE);
           const cached = await cache.match("./index.html");
           return cached || Response.error();
@@ -86,32 +98,46 @@ self.addEventListener("fetch", (event) => {
     return;
   }
 
-  // Cache-first for audio (keeps it snappy after first load)
+  // Cache-first para áudio (mantém performático após primeiro carregamento)
   if (isAudioRequest(request)) {
     event.respondWith(
       (async () => {
         const cache = await caches.open(RUNTIME_CACHE);
         const cached = await cache.match(request);
         if (cached) return cached;
-        const response = await fetch(request);
-        cache.put(request, response.clone());
-        return response;
+        
+        try {
+          const response = await fetch(request);
+          if (response.ok) {
+            cache.put(request, response.clone());
+          }
+          return response;
+        } catch (error) {
+          console.warn("Áudio offline:", request.url);
+          return cached || Response.error();
+        }
       })()
     );
     return;
   }
 
-  // Stale-while-revalidate for everything else
+  // Stale-while-revalidate para tudo mais
   event.respondWith(
     (async () => {
       const cache = await caches.open(RUNTIME_CACHE);
       const cached = await cache.match(request);
+      
       const fetchPromise = fetch(request)
         .then((response) => {
-          cache.put(request, response.clone());
+          if (response.ok) {
+            cache.put(request, response.clone());
+          }
           return response;
         })
-        .catch(() => cached);
+        .catch(() => {
+          console.warn("Fetch falhou, usando cache:", request.url);
+          return cached;
+        });
 
       return cached || fetchPromise;
     })()

@@ -8,6 +8,8 @@
   "orientation": "portrait-primary",
   "background_color": "#0b0b0d",
   "theme_color": "#0b0b0d",
+  "categories": ["music", "productivity"],
+  "prefer_related_applications": false,
   "screenshots": [
     {
       "src": "icons/icon.svg",
@@ -36,8 +38,6 @@
       "purpose": "maskable"
     }
   ],
-  "categories": ["music", "productivity"],
-  "screenshots": [],
   "shortcuts": [
     {
       "name": "Abrir Soundboard",
